@@ -125,6 +125,97 @@
         </div>
     </div>
 
+    <!-- ====== LLM 设置弹窗 ====== -->
+    <div id="modal-settings" class="modal" style="display:none;">
+        <div class="modal-content settings-content">
+            <h2>⚙️ LLM 编排设置</h2>
+
+            <!-- 主力模型 -->
+            <fieldset class="settings-section">
+                <legend>🎯 主力模型</legend>
+                <div class="form-row">
+                    <label>提供商</label>
+                    <select id="llm-primary-provider">
+                        <option value="anthropic">Anthropic (Claude)</option>
+                        <option value="openai">OpenAI (GPT)</option>
+                        <option value="ollama">Ollama (本地)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>模型 ID</label>
+                    <input type="text" id="llm-primary-model" placeholder="claude-sonnet-4-20250514">
+                </div>
+                <div class="form-row">
+                    <label>API Key</label>
+                    <input type="password" id="llm-primary-api-key" placeholder="留空则使用环境变量">
+                </div>
+                <div class="form-row">
+                    <label>Base URL <small>(可选)</small></label>
+                    <input type="text" id="llm-primary-base-url" placeholder="http://localhost:11434">
+                </div>
+                <div class="form-row form-row-3">
+                    <div>
+                        <label>Temperature: <span id="llm-temp-val">0.10</span></label>
+                        <input type="range" id="llm-primary-temperature" min="0" max="1" step="0.05" value="0.1">
+                    </div>
+                    <div>
+                        <label>Max Tokens</label>
+                        <input type="number" id="llm-primary-max-tokens" value="200" min="50" max="4000">
+                    </div>
+                    <div>
+                        <label>超时 (秒)</label>
+                        <input type="number" id="llm-primary-timeout" value="15" min="5" max="120" step="5">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- 降级链 -->
+            <fieldset class="settings-section">
+                <legend>🔗 降级链 <button type="button" id="btn-add-fallback" class="btn btn-sm" style="margin-left:10px;">+ 添加</button></legend>
+                <p class="form-hint">主力模型失败时，按顺序尝试降级链中的模型。</p>
+                <div id="fallback-list"></div>
+            </fieldset>
+
+            <!-- 决策策略 -->
+            <fieldset class="settings-section">
+                <legend>🎲 决策策略</legend>
+                <div class="form-row form-row-3">
+                    <div>
+                        <label>调用频率</label>
+                        <select id="llm-call-frequency">
+                            <option value="every">每次决策 (every)</option>
+                            <option value="critical">仅关键决策 (critical)</option>
+                            <option value="mixed">混合模式 (mixed)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>每手最少 LLM 调用</label>
+                        <input type="number" id="llm-min-decisions" value="1" min="0" max="10">
+                    </div>
+                    <div>
+                        <label>上下文窗口 (手)</label>
+                        <input type="number" id="llm-context-window" value="5" min="1" max="20">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- 高级功能 -->
+            <fieldset class="settings-section">
+                <legend>✨ 高级功能</legend>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="llm-prompt-caching" checked> Prompt Caching（节省 Token）</label>
+                    <label><input type="checkbox" id="llm-commentary"> AI 解说（每步行为点评）</label>
+                    <label><input type="checkbox" id="llm-advisor"> AI 顾问（决策建议提示）</label>
+                </div>
+            </fieldset>
+
+            <div class="modal-buttons">
+                <button id="btn-save-settings" class="btn btn-primary">💾 保存设置</button>
+                <button id="btn-close-settings" class="btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ====== 新游戏弹窗 ====== -->
     <div id="modal-new-game" class="modal" style="display:none;">
         <div class="modal-content">
@@ -208,6 +299,7 @@
     <script src="/static/js/app.js"></script>
     <script src="/static/js/table.js"></script>
     <script src="/static/js/controls.js"></script>
+    <script src="/static/js/settings.js"></script>
     <script src="/static/js/ui.js"></script>
 </body>
 </html>

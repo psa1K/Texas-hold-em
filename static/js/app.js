@@ -112,11 +112,7 @@ const App = {
             document.getElementById('modal-new-game').style.display = 'flex';
         });
 
-        // 设置按钮
-        document.getElementById('btn-settings').addEventListener('click', () => {
-            this._refreshBotRows();
-            document.getElementById('modal-new-game').style.display = 'flex';
-        });
+        // 设置按钮 — 由 settings.js 处理
 
         // 开始游戏
         document.getElementById('btn-start-game').addEventListener('click', () => {

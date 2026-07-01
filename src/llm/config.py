@@ -152,3 +152,55 @@ def load_config(config_path: Optional[str] = None) -> LLMConfig:
     config.enable_advisor = json_config.get("advisor", {}).get("enabled", False)
 
     return config
+
+
+def save_config(config: LLMConfig, config_path: Optional[str] = None) -> None:
+    """将 LLM 配置保存为 JSON 文件。
+
+    Args:
+        config: 要保存的 LLMConfig 实例。
+        config_path: 目标文件路径，默认保存到 config/llm_config.json。
+    """
+    project_root = _find_project_root()
+    if config_path is None:
+        config_path = str(project_root / "config" / "llm_config.json")
+
+    def _provider_to_dict(pc: ProviderConfig) -> Dict[str, Any]:
+        d: Dict[str, Any] = {
+            "provider": pc.provider,
+            "model": pc.model,
+            "timeout_seconds": pc.timeout_seconds,
+        }
+        if pc.api_key:
+            d["api_key"] = pc.api_key
+        if pc.base_url:
+            d["base_url"] = pc.base_url
+        return d
+
+    json_config: Dict[str, Any] = {
+        "provider": config.primary.provider,
+        "model": config.primary.model,
+        "timeout_seconds": config.primary.timeout_seconds,
+        "temperature": config.primary.temperature,
+        "max_tokens": config.primary.max_tokens,
+        "fallbacks": [_provider_to_dict(fb) for fb in config.fallbacks],
+        "strategy": {
+            "call_frequency": config.call_frequency,
+            "min_llm_decisions_per_hand": config.min_llm_decisions_per_hand,
+            "context_window_hands": config.context_window_hands,
+        },
+        "caching": {
+            "enabled": config.enable_prompt_caching,
+            "prompt_caching": config.enable_prompt_caching,
+        },
+        "commentary": {"enabled": config.enable_commentary},
+        "advisor": {"enabled": config.enable_advisor},
+    }
+    if config.primary.api_key:
+        json_config["api_key"] = config.primary.api_key
+    if config.primary.base_url:
+        json_config["base_url"] = config.primary.base_url
+
+    os.makedirs(os.path.dirname(config_path), exist_ok=True)
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(json_config, f, indent=2, ensure_ascii=False)

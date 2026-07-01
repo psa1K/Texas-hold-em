@@ -125,6 +125,77 @@ def register_routes(app: Flask) -> None:
             return jsonify({"error": "没有可回放的牌局"}), 404
         return jsonify(replay)
 
+    @app.route("/api/config/llm", methods=["GET"])
+    def get_llm_config():
+        """获取当前 LLM 配置。"""
+        from src.llm.config import load_config, ProviderConfig
+        cfg = load_config()
+
+        def _pc(pc: ProviderConfig) -> dict:
+            return {
+                "provider": pc.provider,
+                "model": pc.model,
+                "api_key": "***" if pc.api_key else "",
+                "base_url": pc.base_url,
+                "timeout_seconds": pc.timeout_seconds,
+                "temperature": pc.temperature,
+                "max_tokens": pc.max_tokens,
+            }
+
+        return jsonify({
+            "primary": _pc(cfg.primary),
+            "fallbacks": [_pc(fb) for fb in cfg.fallbacks],
+            "call_frequency": cfg.call_frequency,
+            "min_llm_decisions_per_hand": cfg.min_llm_decisions_per_hand,
+            "context_window_hands": cfg.context_window_hands,
+            "enable_prompt_caching": cfg.enable_prompt_caching,
+            "enable_commentary": cfg.enable_commentary,
+            "enable_advisor": cfg.enable_advisor,
+        })
+
+    @app.route("/api/config/llm", methods=["POST"])
+    def set_llm_config():
+        """保存 LLM 配置。"""
+        from src.llm.config import LLMConfig, ProviderConfig, save_config
+        data = request.get_json() or {}
+
+        primary_data = data.get("primary", {})
+        raw_key = primary_data.get("api_key", "")
+        # "***" 表示未修改，不覆盖已有 Key
+        actual_key = "" if raw_key == "***" else raw_key
+        primary = ProviderConfig(
+            provider=primary_data.get("provider", "anthropic"),
+            model=primary_data.get("model", "claude-sonnet-4-20250514"),
+            api_key=actual_key,
+            base_url=primary_data.get("base_url", ""),
+            timeout_seconds=float(primary_data.get("timeout_seconds", 15.0)),
+            temperature=float(primary_data.get("temperature", 0.1)),
+            max_tokens=int(primary_data.get("max_tokens", 200)),
+        )
+
+        fallbacks = []
+        for fb_data in data.get("fallbacks", []):
+            fallbacks.append(ProviderConfig(
+                provider=fb_data.get("provider", "anthropic"),
+                model=fb_data.get("model", ""),
+                timeout_seconds=float(fb_data.get("timeout_seconds", 10.0)),
+                base_url=fb_data.get("base_url", ""),
+            ))
+
+        cfg = LLMConfig(
+            primary=primary,
+            fallbacks=fallbacks,
+            call_frequency=data.get("call_frequency", "every"),
+            min_llm_decisions_per_hand=int(data.get("min_llm_decisions_per_hand", 1)),
+            context_window_hands=int(data.get("context_window_hands", 5)),
+            enable_prompt_caching=bool(data.get("enable_prompt_caching", True)),
+            enable_commentary=bool(data.get("enable_commentary", False)),
+            enable_advisor=bool(data.get("enable_advisor", False)),
+        )
+
+        save_config(cfg)
+        return jsonify({"status": "ok", "message": "LLM 配置已保存"})
+
     @app.route("/api/bots/styles")
     def bot_styles():
         """列出所有可用的机器人风格。"""
