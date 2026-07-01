@@ -2,6 +2,20 @@
  * app.js — 主入口：SocketIO 连接、状态管理、事件路由。
  */
 
+// 机器人风格列表（value: 英文键, label: 中文成语）
+const BOT_STYLES = [
+    { value: 'TAG',              label: '老谋深算' },
+    { value: 'LAG',              label: '锋芒毕露' },
+    { value: 'NIT',              label: '谨小慎微' },
+    { value: 'CALLING_STATION',  label: '随波逐流' },
+    { value: 'MANIAC',           label: '狂放不羁' },
+    { value: 'SHARK',            label: '运筹帷幄' },
+    { value: 'LLM',              label: '神机妙算' },
+];
+
+// 默认机器人名字
+const DEFAULT_BOT_NAMES = ['曹操', '刘备', '孙权', '诸葛', '司马', '周瑜', '吕布', '赵云'];
+
 const App = {
     socket: null,
     gameState: null,
@@ -12,7 +26,42 @@ const App = {
         this.socket = io();
         this._bindSocketEvents();
         this._bindUIEvents();
+        this._refreshBotRows();  // 生成默认 5 个机器人
         console.log('[App] 初始化完成');
+    },
+
+    /** 根据对手数量刷新机器人行 */
+    _refreshBotRows() {
+        const count = parseInt(document.getElementById('input-bot-count').value) || 5;
+        const container = document.getElementById('bot-config-list');
+        container.innerHTML = '';
+
+        for (let i = 0; i < count; i++) {
+            const row = document.createElement('div');
+            row.className = 'bot-row';
+
+            // 风格下拉
+            const select = document.createElement('select');
+            select.className = 'bot-style';
+            BOT_STYLES.forEach((s, idx) => {
+                const opt = document.createElement('option');
+                opt.value = s.value;
+                opt.textContent = s.label;
+                if (idx === i % BOT_STYLES.length) opt.selected = true;  // 轮流默认风格
+                select.appendChild(opt);
+            });
+
+            // 名字输入
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'bot-name';
+            input.value = DEFAULT_BOT_NAMES[i] || `Bot${i + 1}`;
+            input.maxLength = 12;
+
+            row.appendChild(select);
+            row.appendChild(input);
+            container.appendChild(row);
+        }
     },
 
     /** 绑定 SocketIO 事件 */
@@ -52,14 +101,20 @@ const App = {
 
     /** 绑定 UI 事件 */
     _bindUIEvents() {
+        // 对手数量变化 → 刷新机器人列表
+        document.getElementById('input-bot-count').addEventListener('change', () => {
+            this._refreshBotRows();
+        });
+
         // 新游戏按钮
         document.getElementById('btn-new-game').addEventListener('click', () => {
+            this._refreshBotRows();  // 确保显示当前数量的机器人
             document.getElementById('modal-new-game').style.display = 'flex';
         });
 
         // 设置按钮
         document.getElementById('btn-settings').addEventListener('click', () => {
-            // 简化：直接打开新游戏弹窗
+            this._refreshBotRows();
             document.getElementById('modal-new-game').style.display = 'flex';
         });
 

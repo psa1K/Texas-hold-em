@@ -389,11 +389,11 @@ def register_events(app: Flask) -> None:
         _game_manager.create_game(
             player_name=data.get("player_name", "Player"),
             bot_configs=data.get("bots", [
-                {"style": "TAG", "name": "Alice"},
-                {"style": "LAG", "name": "Bob"},
-                {"style": "NIT", "name": "Charlie"},
-                {"style": "CALLING_STATION", "name": "Diana"},
-                {"style": "MANIAC", "name": "Eve"},
+                {"style": "TAG", "name": "曹操"},
+                {"style": "LAG", "name": "刘备"},
+                {"style": "NIT", "name": "孙权"},
+                {"style": "CALLING_STATION", "name": "诸葛"},
+                {"style": "MANIAC", "name": "吕布"},
             ]),
             starting_chips=data.get("starting_chips", 1000),
             small_blind=data.get("small_blind", 5),

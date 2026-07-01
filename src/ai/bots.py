@@ -77,8 +77,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.4,
         cbet_frequency=0.8,
         position_sensitivity=0.7,
-        display_name="紧凶型 (TAG)",
-        description="只玩好牌，一旦入池极具侵略性。",
+        display_name="老谋深算",
+        description="只玩好牌，一旦入池极具侵略性。深谋远虑，步步为营。",
     ),
     BotStyle.LAG: BotProfile(
         style=BotStyle.LAG,
@@ -88,8 +88,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.2,
         cbet_frequency=0.9,
         position_sensitivity=0.6,
-        display_name="松凶型 (LAG)",
-        description="玩很多牌，持续施加压力。",
+        display_name="锋芒毕露",
+        description="玩很多牌，持续施加压力。咄咄逼人，锋芒尽显。",
     ),
     BotStyle.NIT: BotProfile(
         style=BotStyle.NIT,
@@ -99,8 +99,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.7,
         cbet_frequency=0.6,
         position_sensitivity=0.3,
-        display_name="极紧型 (Nit)",
-        description="只玩顶级强牌，超级保守。",
+        display_name="谨小慎微",
+        description="只玩顶级强牌，超级保守。如履薄冰，非优不入。",
     ),
     BotStyle.CALLING_STATION: BotProfile(
         style=BotStyle.CALLING_STATION,
@@ -110,8 +110,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.03,
         cbet_frequency=0.1,
         position_sensitivity=0.05,
-        display_name="跟注站 (Calling Station)",
-        description="几乎从不弃牌，极少加注。",
+        display_name="随波逐流",
+        description="几乎从不弃牌，极少加注。随大流而行，随遇而安。",
     ),
     BotStyle.MANIAC: BotProfile(
         style=BotStyle.MANIAC,
@@ -121,8 +121,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.02,
         cbet_frequency=0.95,
         position_sensitivity=0.05,
-        display_name="疯子型 (Maniac)",
-        description="任何两张牌都玩，疯狂加注和诈唬。",
+        display_name="狂放不羁",
+        description="任何两张牌都玩，疯狂加注和诈唬。天马行空，无所顾忌。",
     ),
     BotStyle.SHARK: BotProfile(
         style=BotStyle.SHARK,
@@ -132,8 +132,8 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.35,
         cbet_frequency=0.75,
         position_sensitivity=0.85,
-        display_name="鲨鱼型 (Shark)",
-        description="接近 GTO 的平衡打法，善用位置优势。",
+        display_name="运筹帷幄",
+        description="接近 GTO 的平衡打法，善用位置优势。运筹帷幄，决胜千里。",
     ),
     BotStyle.LLM: BotProfile(
         style=BotStyle.LLM,
@@ -143,9 +143,20 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
         fold_to_raise=0.35,
         cbet_frequency=0.75,
         position_sensitivity=0.85,
-        display_name="LLM 自适应 (AI)",
-        description="基于大语言模型的智能决策，自适应调整策略。",
+        display_name="神机妙算",
+        description="基于大语言模型的智能决策，神机妙算，洞悉全局。",
     ),
+}
+
+# 风格成语 → BotStyle 映射，供前端使用
+STYLE_IDIOM_MAP: Dict[str, BotStyle] = {
+    "老谋深算": BotStyle.TAG,
+    "锋芒毕露": BotStyle.LAG,
+    "谨小慎微": BotStyle.NIT,
+    "随波逐流": BotStyle.CALLING_STATION,
+    "狂放不羁": BotStyle.MANIAC,
+    "运筹帷幄": BotStyle.SHARK,
+    "神机妙算": BotStyle.LLM,
 }
 
 

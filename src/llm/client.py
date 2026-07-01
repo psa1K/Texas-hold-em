@@ -469,12 +469,13 @@ class MockClient(LLMClient):
         cfg = config or ProviderConfig(provider="mock", model="mock")
         super().__init__(cfg)
         self._responses = responses or ['{"action": "CALL", "amount": 0, "reasoning": "mock"}']
+        self._idx: int = 0
+        self._call_log: List[Dict[str, str]] = []
 
     def add_response(self, response_json: str) -> None:
         """追加一个预设响应。"""
         self._responses.append(response_json)
         self._idx = 0
-        self._call_log: List[Dict[str, str]] = []
 
     def generate(
         self,

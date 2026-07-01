@@ -150,13 +150,21 @@
                     <option value="fixed_limit">固定限注 (Fixed Limit)</option>
                 </select>
 
-                <label>机器人（风格:名称）:</label>
+                <label>对手数量:</label>
+                <select id="input-bot-count">
+                    <option value="1">1 人</option>
+                    <option value="2">2 人</option>
+                    <option value="3">3 人</option>
+                    <option value="4">4 人</option>
+                    <option value="5" selected>5 人</option>
+                    <option value="6">6 人</option>
+                    <option value="7">7 人</option>
+                    <option value="8">8 人</option>
+                </select>
+
+                <label>机器人对手:</label>
                 <div id="bot-config-list">
-                    <div class="bot-row"><select class="bot-style"><option>TAG</option><option>LAG</option><option>NIT</option><option>CALLING_STATION</option><option>MANIAC</option><option>SHARK</option></select><input type="text" class="bot-name" value="Alice" maxlength="15"></div>
-                    <div class="bot-row"><select class="bot-style"><option>LAG</option><option>TAG</option><option>NIT</option><option>CALLING_STATION</option><option>MANIAC</option><option>SHARK</option></select><input type="text" class="bot-name" value="Bob" maxlength="15"></div>
-                    <div class="bot-row"><select class="bot-style"><option>NIT</option><option>TAG</option><option>LAG</option><option>CALLING_STATION</option><option>MANIAC</option><option>SHARK</option></select><input type="text" class="bot-name" value="Charlie" maxlength="15"></div>
-                    <div class="bot-row"><select class="bot-style"><option>CALLING_STATION</option><option>TAG</option><option>LAG</option><option>NIT</option><option>MANIAC</option><option>SHARK</option></select><input type="text" class="bot-name" value="Diana" maxlength="15"></div>
-                    <div class="bot-row"><select class="bot-style"><option>MANIAC</option><option>TAG</option><option>LAG</option><option>NIT</option><option>CALLING_STATION</option><option>SHARK</option></select><input type="text" class="bot-name" value="Eve" maxlength="15"></div>
+                    <!-- 由 JS 动态生成 -->
                 </div>
             </div>
             <div class="modal-buttons">
