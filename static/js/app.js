@@ -84,8 +84,12 @@ const App = {
             UI.updateAnalysis(state);
             UI.updateStats();
 
-            document.getElementById('hand-counter').textContent =
-                `手牌 #${state.hand_id}`;
+            // 更新手牌计数器（两处：header 和 toolbar）
+            const handText = `手牌 #${state.hand_id}`;
+            const hc = document.getElementById('hand-counter');
+            if (hc) hc.textContent = handText;
+            const hct = document.getElementById('hand-counter-toolbar');
+            if (hct) hct.textContent = handText;
         });
 
         this.socket.on('action_required', (data) => {
@@ -104,6 +108,11 @@ const App = {
         // 对手数量变化 → 刷新机器人列表
         document.getElementById('input-bot-count').addEventListener('change', () => {
             this._refreshBotRows();
+        });
+
+        // 历史回放按钮（牌桌工具栏）
+        document.getElementById('btn-replay-history').addEventListener('click', () => {
+            this._openReplay();
         });
 
         // 新游戏按钮
@@ -136,6 +145,9 @@ const App = {
         });
 
         // 回放控制
+        document.getElementById('replay-hand-selector').addEventListener('change', (e) => {
+            this._loadReplayHand(parseInt(e.target.value));
+        });
         document.getElementById('btn-replay-play').addEventListener('click', () => {
             if (this._replayPlaying) this._pauseReplay();
             else this._startReplay();
@@ -155,16 +167,45 @@ const App = {
     _replayPlaying: false,
     _replayTimer: null,
 
-    /** 打开回放面板 */
-    _openReplay() {
-        fetch('/api/game/replay')
+    /** 打开回放面板（handId 可选，默认最近一手） */
+    _openReplay(handId) {
+        // 先加载手牌列表
+        fetch('/api/game/replays')
+            .then(r => r.json())
+            .then(list => {
+                if (list.error) { alert(list.error); return; }
+                if (!list.length) { alert('还没有任何可回放的手牌'); return; }
+
+                // 填充选择器
+                const selector = document.getElementById('replay-hand-selector');
+                selector.innerHTML = list.map(h => {
+                    const winnerText = Object.entries(h.winners || {})
+                        .map(([n, amt]) => `${n} +$${amt}`).join(', ');
+                    const cardsText = (h.community_cards || []).join(' ') || '未到摊牌';
+                    return `<option value="${h.hand_id}">
+                        #${h.hand_id} — ${h.num_actions} 步 — ${winnerText} — ${cardsText}
+                    </option>`;
+                }).join('');
+
+                // 选择指定手牌或最后一手
+                const targetId = handId || list[list.length - 1].hand_id;
+                selector.value = targetId;
+                this._loadReplayHand(targetId);
+                document.getElementById('modal-replay').style.display = 'flex';
+            })
+            .catch(e => alert('获取回放列表失败: ' + e));
+    },
+
+    /** 加载指定手牌的回放数据 */
+    _loadReplayHand(handId) {
+        fetch(`/api/game/replay?hand_id=${handId}`)
             .then(r => r.json())
             .then(data => {
                 if (data.error) { alert(data.error); return; }
                 this._replayData = data;
                 this._replayStep = 0;
                 this._replayPlaying = false;
-                document.getElementById('replay-hand-id').textContent = `#${data.hand_id}`;
+                document.getElementById('btn-replay-play').textContent = '▶ 播放';
 
                 // 显示玩家底牌
                 const playersDiv = document.getElementById('replay-players');
@@ -176,7 +217,6 @@ const App = {
                 ).join('');
 
                 this._renderReplay();
-                document.getElementById('modal-replay').style.display = 'flex';
             })
             .catch(e => alert('获取回放数据失败: ' + e));
     },

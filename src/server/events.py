@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 import threading
 from threading import Event, Lock
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from flask import Flask
 from flask_socketio import SocketIO
@@ -31,7 +31,7 @@ class GameManager:
         self._lock = Lock()
         self._bot_running: bool = False
         self._bot_wake_event = Event()
-        self._last_replay: Optional[dict] = None  # 最近一手牌的完整回放数据
+        self._replay_history: List[dict] = []  # 所有已完成手牌的完整回放数据
 
     def create_game(
         self,
@@ -345,7 +345,7 @@ class GameManager:
         if history is not None:
             self.reporter.record_hand(history)
             # 保存回放数据
-            self._last_replay = {
+            replay = {
                 "hand_id": history.hand_id,
                 "players": [
                     {
@@ -369,10 +369,32 @@ class GameManager:
                 "winning_hands": {n: str(h) for n, h in history.winning_hands.items()},
                 "pot_total": history.pot_total,
             }
+            self._replay_history.append(replay)
 
-    def get_replay(self) -> Optional[dict]:
-        """返回最近一手牌的完整回放数据。"""
-        return self._last_replay
+    def get_replay_list(self) -> list:
+        """返回所有可回放的手牌摘要列表。"""
+        return [
+            {
+                "hand_id": r["hand_id"],
+                "num_actions": len(r["actions"]),
+                "winners": r["winners"],
+                "winning_hands": r["winning_hands"],
+                "pot_total": r["pot_total"],
+                "community_cards": r["community_cards"][-2:] if len(r["community_cards"]) >= 2 else r["community_cards"],
+            }
+            for r in self._replay_history[-50:]  # 最近 50 手
+        ]
+
+    def get_replay(self, hand_id: Optional[int] = None) -> Optional[dict]:
+        """返回指定手牌的完整回放数据，默认返回最近一手。"""
+        if not self._replay_history:
+            return None
+        if hand_id is not None:
+            for r in self._replay_history:
+                if r["hand_id"] == hand_id:
+                    return r
+            return None
+        return self._replay_history[-1]
 
     def get_history(self) -> list:
         """获取牌局历史摘要（最近 20 手）。"""

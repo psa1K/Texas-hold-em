@@ -116,14 +116,27 @@ def register_routes(app: Flask) -> None:
 
     @app.route("/api/game/replay")
     def game_replay():
-        """获取最近一手牌的完整回放数据。"""
+        """获取指定手牌的完整回放数据。
+
+        Query params:
+            hand_id: 手牌 ID（可选，默认返回最近一手）
+        """
         mgr = get_game_manager()
         if mgr is None:
             return jsonify({"error": "服务器未就绪"}), 500
-        replay = mgr.get_replay()
+        hand_id = request.args.get("hand_id", type=int)
+        replay = mgr.get_replay(hand_id)
         if replay is None:
             return jsonify({"error": "没有可回放的牌局"}), 404
         return jsonify(replay)
+
+    @app.route("/api/game/replays")
+    def game_replays():
+        """获取所有可回放手牌的摘要列表。"""
+        mgr = get_game_manager()
+        if mgr is None:
+            return jsonify({"error": "服务器未就绪"}), 500
+        return jsonify(mgr.get_replay_list())
 
     @app.route("/api/config/llm", methods=["GET"])
     def get_llm_config():
