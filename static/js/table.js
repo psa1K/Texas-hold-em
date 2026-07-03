@@ -1,5 +1,6 @@
 /**
  * table.js — 扑克桌面渲染：玩家位置、公共牌、底池、动画。
+ * 牌面素材：Chris Aguilar Vector Playing Cards (Public Domain)
  */
 
 const Table = {
@@ -10,13 +11,35 @@ const Table = {
         this._renderPlayers(state);
     },
 
+    /**
+     * 将服务器牌串映射为 Aguilar SVG 路径。
+     * 服务器: "A♠", "T♥", "K♦", "2♣"  (T=10, Unicode花色)
+     * Aguilar: ace_of_spades.svg, 10_of_hearts.svg 等
+     */
+    _cardImgPath(cardStr) {
+        if (!cardStr || cardStr === '??') return null;
+        const AGUILAR = '/static/img/cards/aguilar';
+        const RANK = {'A':'ace','2':'2','3':'3','4':'4','5':'5','6':'6',
+                       '7':'7','8':'8','9':'9','T':'10','J':'jack','Q':'queen','K':'king'};
+        const SUIT = {'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs',
+                      's':'spades','h':'hearts','d':'diamonds','c':'clubs'};
+        let rank = cardStr[0];
+        let suitChar = cardStr[cardStr.length - 1];
+        if (rank === '1' && cardStr.length >= 3) rank = '10';  // "10♠" 格式
+        const agRank = RANK[rank];
+        const agSuit = SUIT[suitChar];
+        if (!agRank || !agSuit) return null;
+        return `${AGUILAR}/${agRank}_of_${agSuit}.svg`;
+    },
+
     /** 渲染公共牌 */
     _renderCommunityCards(cards) {
         const slots = document.querySelectorAll('.community-card');
         slots.forEach((slot, i) => {
             if (i < cards.length && cards[i] !== '??') {
                 slot.className = 'community-card card-revealed';
-                this._renderCardContent(slot, cards[i]);
+                const path = this._cardImgPath(cards[i]);
+                slot.innerHTML = path ? `<img src="${path}" class="card-img" alt="${cards[i]}">` : '';
             } else {
                 slot.className = 'community-card slot';
                 slot.innerHTML = '';
@@ -26,17 +49,12 @@ const Table = {
 
     /** 渲染单张牌的内容 */
     _renderCardContent(el, cardStr) {
-        if (!cardStr || cardStr === '??') {
-            el.innerHTML = '<span style="color:#999">?</span>';
-            return;
+        const path = this._cardImgPath(cardStr);
+        if (path) {
+            el.innerHTML = `<img src="${path}" class="card-img" alt="${cardStr}">`;
+        } else {
+            el.innerHTML = `<img src="/static/img/cards/aguilar/back.png" class="card-img" alt="?">`;
         }
-        // cardStr 格式如 "A♠" 或 "As"
-        const rank = cardStr[0];
-        let suitSymbol = cardStr[1] || '';
-        const suitMap = {'s':'♠','h':'♥','d':'♦','c':'♣','♠':'♠','♥':'♥','♦':'♦','♣':'♣'};
-        suitSymbol = suitMap[suitSymbol] || suitSymbol;
-        const isRed = suitSymbol === '♥' || suitSymbol === '♦';
-        el.innerHTML = `<span style="color:${isRed ? '#d32f2f' : '#212121'}">${rank}<br>${suitSymbol}</span>`;
     },
 
     /** 渲染底池信息 */
@@ -118,13 +136,9 @@ const Table = {
                     ${betDisplay}
                     <div class="hole-cards-mini">
                         ${(p.hole_cards || []).map(c => {
-                            if (c === '??' || !c) return '<div class="hole-card-mini" style="background:#333;color:#666;">?</div>';
-                            const r = c[0];
-                            const s = c[1] || '';
-                            const sm = {'s':'♠','h':'♥','d':'♦','c':'♣'};
-                            const ss = sm[s] || s;
-                            const red = ss === '♥' || ss === '♦';
-                            return `<div class="hole-card-mini" style="color:${red?'#d32f2f':'#212121'}">${r}${ss}</div>`;
+                            const path = this._cardImgPath(c);
+                            if (!path) return '<div class="hole-card-mini hole-card-back"><img src="/static/img/cards/aguilar/back.png" class="card-img" alt="?"></div>';
+                            return `<div class="hole-card-mini"><img src="${path}" class="card-img" alt="${c}"></div>`;
                         }).join('')}
                     </div>
                 </div>
