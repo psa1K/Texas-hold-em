@@ -20,8 +20,8 @@ const UI = {
             historyList.addEventListener('click', (e) => {
                 const item = e.target.closest('.history-item');
                 if (!item) return;
-                const handId = parseInt(item.dataset.handId);
-                if (handId && window.App) {
+                const handId = parseInt(item.dataset.handId, 10);
+                if (!Number.isNaN(handId) && typeof App !== 'undefined') {
                     App._openReplay(handId);
                 }
             });
@@ -192,7 +192,7 @@ const UI = {
                     </div>
                 `).join('');
                 // 重新渲染后恢复当前回放条目的高亮
-                if (window.App && App._replayActive && App._replayData) {
+                if (typeof App !== 'undefined' && App._replayActive && App._replayData) {
                     App._highlightHistoryItem(App._replayData.hand_id);
                 }
             })
@@ -296,11 +296,11 @@ const UI = {
     _createCardEl(cardStr) {
         const el = document.createElement('div');
         el.className = 'card-mini';
-        const path = Table._cardImgPath(cardStr);
+        const path = DeckSkin.cardPath(cardStr);
         if (path) {
             el.innerHTML = `<img src="${path}" class="card-img" alt="${cardStr}">`;
         } else {
-            el.innerHTML = `<img src="/static/img/cards/aguilar/back.png" class="card-img" alt="?">`;
+            el.innerHTML = `<img src="${DeckSkin.backPath()}" class="card-img" alt="?">`;
         }
         return el;
     },
