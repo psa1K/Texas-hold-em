@@ -536,11 +536,13 @@ class LLMClientFactory:
     _REGISTRY: Dict[str, type] = {
         "anthropic": AnthropicClient,
         "openai": OpenAIClient,
-        "deepseek": OpenAIClient,   # DeepSeek (OpenAI 兼容)
-        "qwen": OpenAIClient,       # 通义千问 (OpenAI 兼容)
-        "glm": OpenAIClient,        # 智谱 GLM (OpenAI 兼容)
-        "kimi": OpenAIClient,       # Moonshot Kimi (OpenAI 兼容)
-        "minimax": OpenAIClient,    # MiniMax (OpenAI 兼容)
+        "deepseek": OpenAIClient,    # DeepSeek（OpenAI 兼容）
+        "qwen": OpenAIClient,        # 通义千问（OpenAI 兼容）
+        "glm": OpenAIClient,         # 智谱 GLM（OpenAI 兼容）
+        "kimi": OpenAIClient,        # 月之暗面 Kimi（OpenAI 兼容）
+        "minimax": OpenAIClient,     # 稀宇科技 MiniMax（OpenAI 兼容）
+        "volcengine": OpenAIClient,  # 字节跳动火山引擎（OpenAI 兼容）
+        "longcat": OpenAIClient,     # 美团 LongCat（OpenAI 兼容）
         "ollama": OllamaClient,
         "mock": MockClient,
     }

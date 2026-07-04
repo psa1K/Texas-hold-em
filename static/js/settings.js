@@ -4,11 +4,13 @@
 
 // 国内 LLM 提供商预设
 const PROVIDER_PRESETS = {
-    deepseek:  { name: 'DeepSeek',  base_url: 'https://api.deepseek.com',                          models: ['deepseek-v4-pro', 'deepseek-v4-flash'], keyEnv: 'DEEPSEEK_API_KEY', keyHint: '在 platform.deepseek.com 获取' },
-    qwen:      { name: '通义千问 (Qwen)', base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', models: ['qwen-3.7-max', 'qwen-3.7-plus'], keyEnv: 'DASHSCOPE_API_KEY', keyHint: '在 dashscope.aliyun.com 获取' },
-    glm:       { name: '智谱 GLM',  base_url: 'https://open.bigmodel.cn/api/paas/v4',               models: ['glm-5.2', 'glm-5-turbo'], keyEnv: 'GLM_API_KEY', keyHint: '在 open.bigmodel.cn 获取' },
-    kimi:      { name: 'Kimi (月之暗面)', base_url: 'https://api.moonshot.cn',                      models: ['kimi-k2.6'], keyEnv: 'MOONSHOT_API_KEY', keyHint: '在 platform.moonshot.cn 获取' },
-    minimax:   { name: 'MiniMax',  base_url: 'https://api.minimaxi.com/v1',                        models: ['MiniMax-M3'], keyEnv: 'MINIMAX_API_KEY', keyHint: '在 platform.minimaxi.com 获取' },
+    deepseek:  { name: 'DeepSeek（深度求索）', base_url: 'https://api.deepseek.com',                          models: ['deepseek-v4-pro', 'deepseek-v4-flash', 'deepseek-chat'], keyEnv: 'DEEPSEEK_API_KEY', keyHint: '在 platform.deepseek.com 获取' },
+    qwen:      { name: '通义千问（阿里云）', base_url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', models: ['qwen3-max', 'qwen3-plus', 'qwen3-turbo'], keyEnv: 'DASHSCOPE_API_KEY', keyHint: '在 dashscope.aliyun.com 获取' },
+    glm:       { name: '智谱 GLM（智谱AI）',  base_url: 'https://open.bigmodel.cn/api/paas/v4',               models: ['glm-5.2', 'glm-5-turbo', 'glm-5-flash'], keyEnv: 'GLM_API_KEY', keyHint: '在 open.bigmodel.cn 获取' },
+    kimi:      { name: 'Kimi（月之暗面）', base_url: 'https://api.moonshot.cn',                      models: ['kimi-k2.6', 'kimi-k2-turbo'], keyEnv: 'MOONSHOT_API_KEY', keyHint: '在 platform.moonshot.cn 获取' },
+    minimax:   { name: 'MiniMax（稀宇科技）', base_url: 'https://api.minimaxi.com/v1',                        models: ['MiniMax-M3', 'MiniMax-M2'], keyEnv: 'MINIMAX_API_KEY', keyHint: '在 platform.minimaxi.com 获取' },
+    volcengine:{ name: '火山引擎（字节跳动）', base_url: 'https://ark.cn-beijing.volces.com/api/v3',           models: ['doubao-pro', 'doubao-lite', 'doubao-vision'], keyEnv: 'ARK_API_KEY', keyHint: '在 console.volcengine.com 获取' },
+    longcat:   { name: 'LongCat（美团）', base_url: 'https://api.longcat.cn/v1',                        models: ['longcat-pro', 'longcat-flash'], keyEnv: 'LONGCAT_API_KEY', keyHint: '在 longcat.meituan.com 获取' },
     openai:    { name: 'OpenAI (GPT)', base_url: '',                                                 models: ['gpt-4o', 'gpt-4o-mini'], keyEnv: 'OPENAI_API_KEY', keyHint: '在 platform.openai.com 获取' },
     anthropic: { name: 'Anthropic (Claude)', base_url: '',                                           models: ['claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001'], keyEnv: 'ANTHROPIC_API_KEY', keyHint: '在 console.anthropic.com 获取' },
     ollama:    { name: 'Ollama (本地)', base_url: 'http://localhost:11434',                           models: ['llama3', 'qwen3', 'deepseek-r1'], keyEnv: '', keyHint: '本地部署无需 API Key' },

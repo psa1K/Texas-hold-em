@@ -60,34 +60,46 @@ class LLMConfig:
 # 国内 LLM 提供商预设
 PROVIDER_PRESETS: Dict[str, Dict[str, Any]] = {
     "deepseek": {
-        "display_name": "DeepSeek",
+        "display_name": "DeepSeek（深度求索）",
         "base_url": "https://api.deepseek.com",
-        "models": ["deepseek-v4-pro", "deepseek-v4-flash"],
+        "models": ["deepseek-v4-pro", "deepseek-v4-flash", "deepseek-chat"],
         "api_key_env": "DEEPSEEK_API_KEY",
     },
     "qwen": {
-        "display_name": "通义千问 (Qwen)",
+        "display_name": "通义千问（阿里云）",
         "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        "models": ["qwen-3.7-max", "qwen-3.7-plus"],
+        "models": ["qwen3-max", "qwen3-plus", "qwen3-turbo"],
         "api_key_env": "DASHSCOPE_API_KEY",
     },
     "glm": {
-        "display_name": "智谱 GLM",
+        "display_name": "智谱 GLM（智谱AI）",
         "base_url": "https://open.bigmodel.cn/api/paas/v4",
-        "models": ["glm-5.2", "glm-5-turbo"],
+        "models": ["glm-5.2", "glm-5-turbo", "glm-5-flash"],
         "api_key_env": "GLM_API_KEY",
     },
     "kimi": {
-        "display_name": "Kimi (月之暗面)",
+        "display_name": "Kimi（月之暗面 Moonshot）",
         "base_url": "https://api.moonshot.cn",
-        "models": ["kimi-k2.6"],
+        "models": ["kimi-k2.6", "kimi-k2-turbo"],
         "api_key_env": "MOONSHOT_API_KEY",
     },
     "minimax": {
-        "display_name": "MiniMax",
+        "display_name": "MiniMax（稀宇科技）",
         "base_url": "https://api.minimaxi.com/v1",
-        "models": ["MiniMax-M3"],
+        "models": ["MiniMax-M3", "MiniMax-M2"],
         "api_key_env": "MINIMAX_API_KEY",
+    },
+    "volcengine": {
+        "display_name": "火山引擎（字节跳动）",
+        "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+        "models": ["doubao-pro", "doubao-lite", "doubao-vision"],
+        "api_key_env": "ARK_API_KEY",
+    },
+    "longcat": {
+        "display_name": "LongCat（美团）",
+        "base_url": "https://api.longcat.cn/v1",
+        "models": ["longcat-pro", "longcat-flash"],
+        "api_key_env": "LONGCAT_API_KEY",
     },
 }
 
@@ -147,6 +159,8 @@ def load_config(config_path: Optional[str] = None) -> LLMConfig:
             "glm": "GLM_API_KEY",
             "kimi": "MOONSHOT_API_KEY",
             "minimax": "MINIMAX_API_KEY",
+            "volcengine": "ARK_API_KEY",
+            "longcat": "LONGCAT_API_KEY",
         }
         env_var = key_env_map.get(provider, "")
         if env_var:
