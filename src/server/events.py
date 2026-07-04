@@ -367,26 +367,35 @@ class GameManager:
             return
         winners = dict(self.game.winners) if self.game.winners else {}
 
-        # 为每位玩家计算最佳 5 张牌
-        players_data = []
+        # 为每位玩家计算最佳 5 张牌，收集 (dict, sort_key) 对
+        entries: list[tuple[dict, Any]] = []
         for p in self.game.players:
             is_folded = p.is_folded or p.is_out
             best_five: list[str] = []
             hand_description = ""
+            sort_key = None
             if p.hole_cards:
                 all_cards = list(p.hole_cards) + self.game.community_cards
                 if len(all_cards) >= 5:
                     result = HandEvaluator.evaluate(all_cards)
                     best_five = [c.short_str for c in result.best_five]
                     hand_description = result.description
-            players_data.append({
+                    sort_key = result.score  # 元组可比，越小牌力越强
+            player_dict = {
                 "name": p.name,
                 "is_folded": is_folded,
                 "is_winner": p.name in winners,
                 "net_profit": winners.get(p.name, 0) - p.total_bet,
                 "best_five": best_five,
                 "hand_description": hand_description,
-            })
+            }
+            entries.append((player_dict, sort_key))
+
+        # 排序：有有效牌力的按 score 从大到小（强→弱），无牌力的放末尾
+        with_hand = [(d, k) for d, k in entries if k is not None]
+        without_hand = [(d, k) for d, k in entries if k is None]
+        with_hand.sort(key=lambda x: x[1], reverse=True)  # score 降序 = 最强在前
+        players_data = [d for d, _ in with_hand] + [d for d, _ in without_hand]
 
         socketio.emit("hand_completed", {
             "hand_id": self.game.hand_id,

@@ -344,3 +344,46 @@ class TestEdgeCases:
         """A-2-3-4-6 没有顺子。"""
         result = eval_hand("Ah 2s 3d 4h 6c Ks Qd")
         assert result.hand_rank != HandRank.STRAIGHT
+
+
+# ============================================================
+# 弃牌玩家牌力测试
+# ============================================================
+
+class TestFoldedPlayerStronger:
+    """弃牌玩家的手牌实际上更强。"""
+
+    def test_folded_set_beats_winner_pair(self) -> None:
+        """弃牌玩家三条 > 赢家一对。"""
+        community = cards("Ts 8c 8h 6c 2d")  # 公共牌：一对8
+        # 赢家：一对 8
+        winner_hole = cards("Ac Ks")
+        # 弃牌玩家：口袋 8 → 三条
+        folded_hole = cards("8d 7h")
+
+        winner_hand = HandEvaluator.evaluate(winner_hole + community)
+        folded_hand = HandEvaluator.evaluate(folded_hole + community)
+
+        assert folded_hand > winner_hand, (
+            f"弃牌玩家的{folded_hand.description} 应强于赢家的{winner_hand.description}"
+        )
+
+    def test_folded_best_hand_overall(self) -> None:
+        """所有玩家中，弃牌者的牌力排第一。"""
+        community = cards("Ah Kh Qh 2s 3d")
+        # 赢家：一对 A
+        winner_hole = cards("Ac 4s")
+        # 弃牌玩家：同花听牌成牌 → 同花
+        folded_hole = cards("Th 9h")
+        # 另一未弃牌玩家：高牌
+        other_hole = cards("Kc Js")
+
+        hands = [
+            ("winner", HandEvaluator.evaluate(winner_hole + community)),
+            ("folded", HandEvaluator.evaluate(folded_hole + community)),
+            ("other", HandEvaluator.evaluate(other_hole + community)),
+        ]
+        # 按牌力降序排列
+        hands.sort(key=lambda x: x[1], reverse=True)  # score 降序 = 强→弱
+        assert hands[0][0] == "folded", "弃牌玩家的同花应排第一"
+        assert hands[1][0] == "winner", "赢家的一对 A 应排第二"
