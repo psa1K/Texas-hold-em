@@ -86,6 +86,8 @@ class HandReporter:
 
         # 统计动作（所有阶段）
         from src.utils.constants import ActionType, GamePhase
+        vpip_players: set = set()
+        pfr_players: set = set()
         for action in history.actions:
             stats = self.player_stats.get(action.player_name)
             if stats is None:
@@ -97,20 +99,29 @@ class HandReporter:
             elif action.action_type in (ActionType.BET, ActionType.RAISE):
                 stats.raise_count += 1
 
-            # VPIP & PFR：仅统计翻牌前阶段
+            # VPIP & PFR：翻牌前阶段，每人每局只计一次
             if action.phase == GamePhase.PRE_FLOP:
                 if action.action_type in (ActionType.CALL, ActionType.BET, ActionType.RAISE):
-                    stats.vpip_count += 1
+                    vpip_players.add(action.player_name)
                 if action.action_type in (ActionType.BET, ActionType.RAISE):
-                    stats.pfr_count += 1
+                    pfr_players.add(action.player_name)
 
-        # 计算每位玩家本手实际投入的筹码（含盲注、跟注等）
-        # 快照在摊牌/底池分配之前捕获，chips_after 不含赢得的筹码
-        # 公式: spent = chips_before - chips_after
+        for name in vpip_players:
+            if name in self.player_stats:
+                self.player_stats[name].vpip_count += 1
+        for name in pfr_players:
+            if name in self.player_stats:
+                self.player_stats[name].pfr_count += 1
+
+        # 计算每位玩家本手实际投入的筹码（含盲注、跟注、退款等）
+        # 公式: spent = chips_before - chips_after + total_won
+        #   chips_before = 开局快照[0]（盲注之前的筹码）
+        #   chips_after  = 终局快照[-1]（底池分配/退款之后的筹码）
+        #   total_won    = 本手赢得的筹码
         snapshots = getattr(history, 'step_snapshots', None)
         if snapshots and len(snapshots) >= 2:
-            first = snapshots[0]   # 发牌后、首次行动前的快照
-            last = snapshots[-1]   # 最后行动后、摊牌前的快照
+            first = snapshots[0]
+            last = snapshots[-1]
             first_chips = {p['name']: p['chips'] for p in first.get('players', [])}
             last_chips = {p['name']: p['chips'] for p in last.get('players', [])}
             for name in history.players:
@@ -119,7 +130,8 @@ class HandReporter:
                     continue
                 chips_before = first_chips.get(name, 0)
                 chips_after = last_chips.get(name, 0)
-                spent = chips_before - chips_after
+                won = history.winners.get(name, 0)
+                spent = chips_before - chips_after + won
                 if spent > 0:
                     stats.total_spent += spent
 

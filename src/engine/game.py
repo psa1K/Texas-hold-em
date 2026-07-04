@@ -154,6 +154,9 @@ class GameState:
             self.phase = GamePhase.FINISHED
             return
 
+        # 记录初始快照（盲注/底注之前，step 0）
+        self._step_snapshots.append(self._capture_snapshot())
+
         # 移动庄位
         self._move_dealer()
 
@@ -172,9 +175,6 @@ class GameState:
         self.current_player_index = self._get_first_to_act()
         self._emit("hand_started", self.hand_id)
         self._emit("phase_changed", self.phase)
-
-        # 记录初始快照（发牌后、首次行动前，step 0）
-        self._step_snapshots.append(self._capture_snapshot())
 
     def _move_dealer(self) -> None:
         """庄位顺时针移动。"""
@@ -293,6 +293,9 @@ class GameState:
 
         # 分配底池给赢家
         self._distribute_pots(active_players, hand_results)
+
+        # 记录终局快照（底池分配后）
+        self._step_snapshots.append(self._capture_snapshot())
 
         self._emit("showdown", {
             "community": [str(c) for c in self.community_cards],
@@ -608,6 +611,9 @@ class GameState:
 
         winner.win_pot(total_pot)
         self.winners[winner.name] = total_pot
+
+        # 记录终局快照（退款和底池分配后）
+        self._step_snapshots.append(self._capture_snapshot())
 
         # 评估赢家手牌
         if winner.hole_cards:
