@@ -14,13 +14,14 @@ const Table = {
     /**
      * 将服务器牌串映射为 Aguilar SVG 路径。
      * 服务器: "A♠", "T♥", "K♦", "2♣"  (T=10, Unicode花色)
-     * Aguilar: ace_of_spades.svg, 10_of_hearts.svg 等
+     * Aguilar: ace_of_spades.svg, 10_of_hearts.svg, king_of_hearts2.svg 等
      */
     _cardImgPath(cardStr) {
         if (!cardStr || cardStr === '??') return null;
         const AGUILAR = '/static/img/cards/aguilar';
         const RANK = {'A':'ace','2':'2','3':'3','4':'4','5':'5','6':'6',
-                       '7':'7','8':'8','9':'9','T':'10','J':'jack','Q':'queen','K':'king'};
+                       '7':'7','8':'8','9':'9','T':'10',
+                       'J':'jack2','Q':'queen2','K':'king2'};
         const SUIT = {'♠':'spades','♥':'hearts','♦':'diamonds','♣':'clubs',
                       's':'spades','h':'hearts','d':'diamonds','c':'clubs'};
         let rank = cardStr[0];
