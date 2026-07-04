@@ -205,6 +205,8 @@ class GameManager:
                 continue
 
             # 处理手牌结束 → 自动开始下一手
+            hand_ended = False
+            game_over = False
             with self._lock:
                 if self.game is None:
                     break
@@ -217,20 +219,30 @@ class GameManager:
                         self._emit_hand_completed()
                         self._hand_paused = True
                         self._hand_continue_event.clear()
-                        # 等待用户点击"继续"或"结束"
-                        _sleep(0.5)
-                        while self._bot_running and self._hand_paused:
-                            self._hand_continue_event.wait(timeout=1.0)
-                        if not self._bot_running:
-                            break
-                        # 用户选择继续 → 开始下一手
-                        game.start_new_hand()
-                        self._broadcast_state()
+                        hand_ended = True
                     else:
                         self._broadcast_state()
                         self._emit_game_over()
+                        game_over = True
+
+            if game_over:
+                break
+
+            if hand_ended:
+                # 在锁外轮询等待用户点击"继续"或"结束"。
+                # 必须用 socketio.sleep（协程友好）而非 threading.Event.wait，
+                # 否则会阻塞 eventlet 事件循环，导致 HTTP 请求（如回放接口）无法处理。
+                while self._bot_running and self._hand_paused:
+                    _sleep(0.5)
+                if not self._bot_running:
+                    break
+                # 用户选择继续 → 开始下一手
+                with self._lock:
+                    if self.game is None:
                         break
-                    continue
+                    self.game.start_new_hand()
+                    self._broadcast_state()
+                continue
 
             # 手牌进行中，当前是机器人 → 延迟以模拟思考时间
             _sleep(1.0)
