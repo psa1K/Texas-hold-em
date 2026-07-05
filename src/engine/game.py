@@ -74,6 +74,7 @@ class GameState:
         big_blind: int = 10,
         ante: int = 0,
         betting_structure: BettingStructure = BettingStructure.NO_LIMIT,
+        auto_rebuy: bool = True,
     ) -> None:
         if len(players) < 2:
             raise ValueError("至少需要 2 名玩家")
@@ -85,6 +86,7 @@ class GameState:
         self.big_blind = big_blind
         self.ante = ante
         self.betting_structure = betting_structure
+        self.auto_rebuy = auto_rebuy
 
         self.deck = Deck()
         self.pot = Pot()
@@ -146,9 +148,10 @@ class GameState:
             p.reset_for_new_hand()
 
         # 自动重购：本金输光的玩家重新获得 1000 筹码
-        for p in self.players:
-            if p.chips == 0:
-                p.rebuy(1000)
+        if self.auto_rebuy:
+            for p in self.players:
+                if p.chips == 0:
+                    p.rebuy(1000)
 
         # 移除无筹码的玩家
         active_players = [p for p in self.players if p.chips > 0]
