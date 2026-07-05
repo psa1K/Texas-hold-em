@@ -112,10 +112,10 @@ class BoltzmannBot:
         self, name: str, profile: BotProfile,
         seed: int = 42,
         postflop_sims: int = 200,
-        bet_k_value: float = 0.8,
-        bet_k_bluff: float = 1.2,
-        bet_cap_frac: float = 1.0,
-        bet_strategy: str = "blended",
+        bet_k_value: float = 0.6,
+        bet_k_bluff: float = 0.65,
+        bet_cap_frac: float = 0.75,
+        bet_strategy: str = "separated",
     ) -> None:
         self.name = name
         self.profile = profile

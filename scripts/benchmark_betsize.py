@@ -26,11 +26,12 @@ PROFILES = [
     BOT_PROFILES[BotStyle.CHAOS],
 ]
 
-def run_sweep(configs, n_hands, label):
+def run_sweep(configs, n_hands, label, postflop_sims=25):
     """运行一轮参数扫描，每配置 n_hands 手。返回排序后的结果列表。"""
     results = []
     for i, cfg in enumerate(configs):
         desc, params = cfg
+        print(f"    [{i+1}/{len(configs)}] {desc} ...", end=" ", flush=True)
         rng = random.Random(SEED_BASE + i * 1000)
         player_profits = Counter()
         all_bets = []
@@ -43,7 +44,8 @@ def run_sweep(configs, n_hands, label):
             game = GameState(players, small_blind=5, big_blind=10, auto_rebuy=False)
             bots = {}
             for pf, ply in zip(pf_shuffled, players):
-                bots[ply.name] = BoltzmannBot(ply.name, pf, seed=rng.randint(0, 99999), **params)
+                bots[ply.name] = BoltzmannBot(ply.name, pf, seed=rng.randint(0, 99999),
+                                               postflop_sims=postflop_sims, **params)
 
             game.start_new_hand()
             if game.phase.value >= 6:
@@ -77,6 +79,7 @@ def run_sweep(configs, n_hands, label):
         avg_bet = sum(all_bets) / len(all_bets) if all_bets else 0
         n_bets = len(all_bets)
 
+        print(f"done ({n_bets} bets, avg=${avg_bet:.0f})", flush=True)
         results.append({
             "desc": desc,
             "params": params,
@@ -114,8 +117,8 @@ def print_results(results, title):
 
 def main():
     t0 = time.perf_counter()
-    N_QUICK = 300   # 快速轮的手数
-    N_FINAL = 1000  # 决赛轮的手数
+    N_QUICK = 150   # 快速轮的手数
+    N_FINAL = 500   # 决赛轮的手数
 
     # ================================================================
     # Round 1: 扫描 k_value（固定 strategy=separated, cap=0.75）
@@ -202,7 +205,7 @@ def main():
             "bet_k_value": 0.8, "bet_strategy": "blended", "bet_cap_frac": 1.0}),
     ]
 
-    results_final = run_sweep(top_configs, N_FINAL, "Final")
+    results_final = run_sweep(top_configs, N_FINAL, "Final", postflop_sims=100)
     print_results(results_final, f"Final Results (n={N_FINAL})")
 
     # ================================================================
