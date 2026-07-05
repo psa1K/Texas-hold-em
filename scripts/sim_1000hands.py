@@ -9,12 +9,12 @@ from collections import Counter
 
 SEED = 2026
 PROFILES = [
-    BOT_PROFILES[BotStyle.NIT],
-    BOT_PROFILES[BotStyle.TAG],
-    BOT_PROFILES[BotStyle.SHARK],
-    BOT_PROFILES[BotStyle.LAG],
-    BOT_PROFILES[BotStyle.CALLING_STATION],
-    BOT_PROFILES[BotStyle.MANIAC],
+    BOT_PROFILES[BotStyle.COLD],
+    BOT_PROFILES[BotStyle.COOL],
+    BOT_PROFILES[BotStyle.BALANCED],
+    BOT_PROFILES[BotStyle.WARM],
+    BOT_PROFILES[BotStyle.HOT],
+    BOT_PROFILES[BotStyle.CHAOS],
 ]
 N = 1000
 

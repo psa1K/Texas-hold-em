@@ -61,7 +61,7 @@ class LLMBot(BoltzmannBot):
     ) -> None:
         # 使用 Shark 配置作为降级基准（最接近 GTO）
         from src.ai.bots import BOT_PROFILES
-        profile = BOT_PROFILES[BotStyle.SHARK]
+        profile = BOT_PROFILES[BotStyle.BALANCED]
         super().__init__(name, profile, seed)
 
         # LLM 配置
@@ -71,7 +71,7 @@ class LLMBot(BoltzmannBot):
         self._setup_clients()
 
         # 降级规则引擎（SharkBot）
-        self._rule_bot = BotFactory.create(BotStyle.SHARK, name=f"{name}_rule", seed=seed)
+        self._rule_bot = BotFactory.create(BotStyle.BALANCED, name=f"{name}_rule", seed=seed)
         self._fallback_chain.set_ultimate_fallback(
             lambda g, p: self._rule_bot.decide(g, p)
         )

@@ -3,13 +3,13 @@
 所有 Bot 使用同一算法：计算各合法动作的期望收益（EV），然后通过
 玻尔兹曼分布 P ∝ exp(EV/T) 采样。温度 T 是唯一个性参数。
 
-风格预设（仅温度不同）：
-    NIT (0.5) — 极冷，近乎确定性地选最优动作
-    TAG (1.0) — 偏冷，明显偏好高 EV
-    Shark (2.0) — 温和均衡，默认值
-    LAG (4.0) — 偏热，EV 差异被部分抹平
-    CallingStation (8.0) — 热，Fold 的 EV 优势不明显
-    Maniac (16.0) — 极热，近乎均匀随机
+风格预设（仅温度不同，名称反映决策的"温度"而非传统扑克风格）：
+    COLD (0.03) — 极冷，近乎确定性地选最优动作
+    COOL (0.07) — 偏冷，明显偏好高 EV
+    BALANCED (0.15) — 温和均衡，默认值
+    WARM (0.30) — 偏热，EV 差异被部分抹平
+    HOT (0.60) — 炎热，Fold 的 EV 优势不明显
+    CHAOS (1.20) — 极热/混沌，近乎均匀随机
 """
 
 from __future__ import annotations
@@ -29,14 +29,14 @@ from src.utils.constants import GamePhase
 
 
 class BotStyle(Enum):
-    """机器人风格枚举。"""
+    """机器人风格枚举 —— 按温度命名，反映决策的随机性程度。"""
 
-    TAG = "TAG"
-    LAG = "LAG"
-    NIT = "NIT"
-    CALLING_STATION = "CALLING_STATION"
-    MANIAC = "MANIAC"
-    SHARK = "SHARK"
+    COLD = "COLD"           # T=0.03  极冷
+    COOL = "COOL"           # T=0.07  偏冷
+    BALANCED = "BALANCED"   # T=0.15  均衡（默认）
+    WARM = "WARM"           # T=0.30  偏热
+    HOT = "HOT"             # T=0.60  炎热
+    CHAOS = "CHAOS"         # T=1.20  混沌
     LLM = "LLM"
 
 
@@ -52,35 +52,35 @@ class BotProfile:
 
 # 温度预设（pot 标度系数；T = coefficient * pot, 单位 BB）
 BOT_PROFILES: Dict[BotStyle, BotProfile] = {
-    BotStyle.NIT: BotProfile(
-        style=BotStyle.NIT, temperature=0.03,
-        display_name="NIT T=0.03",
-        description="极冷。近乎确定性，只选 EV 最高的动作。",
+    BotStyle.COLD: BotProfile(
+        style=BotStyle.COLD, temperature=0.03,
+        display_name="极冷 T=0.03",
+        description="近乎确定性，只选 EV 最高的动作。",
     ),
-    BotStyle.TAG: BotProfile(
-        style=BotStyle.TAG, temperature=0.07,
-        display_name="TAG T=0.07",
-        description="偏冷。明显偏好高 EV 动作，中强牌入池。",
+    BotStyle.COOL: BotProfile(
+        style=BotStyle.COOL, temperature=0.07,
+        display_name="偏冷 T=0.07",
+        description="明显偏好高 EV 动作，中强牌入池。",
     ),
-    BotStyle.SHARK: BotProfile(
-        style=BotStyle.SHARK, temperature=0.15,
-        display_name="Shark T=0.15",
+    BotStyle.BALANCED: BotProfile(
+        style=BotStyle.BALANCED, temperature=0.15,
+        display_name="均衡 T=0.15",
         description="温和均衡，EV 驱动决策。",
     ),
-    BotStyle.LAG: BotProfile(
-        style=BotStyle.LAG, temperature=0.30,
-        display_name="LAG T=0.30",
-        description="偏热。EV 差异被部分抹平，更爱探索和施压。",
+    BotStyle.WARM: BotProfile(
+        style=BotStyle.WARM, temperature=0.30,
+        display_name="偏热 T=0.30",
+        description="EV 差异被部分抹平，更爱探索和施压。",
     ),
-    BotStyle.CALLING_STATION: BotProfile(
-        style=BotStyle.CALLING_STATION, temperature=0.60,
-        display_name="CS T=0.60",
-        description="热。Fold 的 EV 优势不明显，几乎不弃牌。",
+    BotStyle.HOT: BotProfile(
+        style=BotStyle.HOT, temperature=0.60,
+        display_name="炎热 T=0.60",
+        description="Fold 的 EV 优势不明显，几乎不弃牌。",
     ),
-    BotStyle.MANIAC: BotProfile(
-        style=BotStyle.MANIAC, temperature=1.20,
-        display_name="MANIAC T=1.20",
-        description="极热。近乎均匀随机，无视牌力。",
+    BotStyle.CHAOS: BotProfile(
+        style=BotStyle.CHAOS, temperature=1.20,
+        display_name="混沌 T=1.20",
+        description="近乎均匀随机，无视牌力。",
     ),
     BotStyle.LLM: BotProfile(
         style=BotStyle.LLM, temperature=0.15,
@@ -91,12 +91,12 @@ BOT_PROFILES: Dict[BotStyle, BotProfile] = {
 
 # 风格显示名 -> BotStyle 映射
 STYLE_IDIOM_MAP: Dict[str, BotStyle] = {
-    "NIT T=0.03": BotStyle.NIT,
-    "TAG T=0.07": BotStyle.TAG,
-    "Shark T=0.15": BotStyle.SHARK,
-    "LAG T=0.30": BotStyle.LAG,
-    "CS T=0.60": BotStyle.CALLING_STATION,
-    "MANIAC T=1.20": BotStyle.MANIAC,
+    "极冷 T=0.03": BotStyle.COLD,
+    "偏冷 T=0.07": BotStyle.COOL,
+    "均衡 T=0.15": BotStyle.BALANCED,
+    "偏热 T=0.30": BotStyle.WARM,
+    "炎热 T=0.60": BotStyle.HOT,
+    "混沌 T=1.20": BotStyle.CHAOS,
     "LLM": BotStyle.LLM,
 }
 
@@ -337,10 +337,10 @@ class BotFactory:
 
     @classmethod
     def create_all_styles(cls) -> List[BoltzmannBot]:
-        """创建所有 6 种风格的 Boltzmann Bot。"""
+        """创建所有 6 种温度的 Boltzmann Bot。"""
         styles = [
-            BotStyle.NIT, BotStyle.TAG, BotStyle.SHARK,
-            BotStyle.LAG, BotStyle.CALLING_STATION, BotStyle.MANIAC,
+            BotStyle.COLD, BotStyle.COOL, BotStyle.BALANCED,
+            BotStyle.WARM, BotStyle.HOT, BotStyle.CHAOS,
         ]
         return [cls.create(s, seed=hash(s.value) % 10000) for s in styles]
 

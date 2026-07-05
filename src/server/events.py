@@ -66,7 +66,7 @@ class GameManager:
 
             # 机器人玩家
             for i, cfg in enumerate(bot_configs):
-                style_name = cfg.get("style", "TAG")
+                style_name = cfg.get("style", "BALANCED")
                 bot_name = cfg.get("name", f"Bot{i+1}")
                 style = BotStyle(style_name)
 
@@ -577,11 +577,11 @@ def register_events(app: Flask) -> None:
         _game_manager.create_game(
             player_name=data.get("player_name", "Player"),
             bot_configs=data.get("bots", [
-                {"style": "TAG", "name": "曹操"},
-                {"style": "LAG", "name": "刘备"},
-                {"style": "NIT", "name": "孙权"},
-                {"style": "CALLING_STATION", "name": "诸葛"},
-                {"style": "MANIAC", "name": "吕布"},
+                {"style": "COOL", "name": "偏冷"},
+                {"style": "WARM", "name": "偏热"},
+                {"style": "COLD", "name": "极冷"},
+                {"style": "HOT", "name": "炎热"},
+                {"style": "CHAOS", "name": "混沌"},
             ]),
             starting_chips=data.get("starting_chips", 1000),
             small_blind=data.get("small_blind", 5),
