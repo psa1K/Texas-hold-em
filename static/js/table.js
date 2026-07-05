@@ -66,7 +66,7 @@ const Table = {
         const cx = tableRect.width / 2;
         const cy = tableRect.height / 2;
         const rx = tableRect.width / 2 - 50;
-        const ry = tableRect.height / 2 - 40;
+        const ry = tableRect.height / 2 - 70;
 
         // 按座位号映射到椭圆上的角度
         players.forEach((p, idx) => {
