@@ -129,6 +129,13 @@ const Controls = {
         });
     },
 
+    /** 重新启用动作按钮（根据当前 gameState） */
+    enableAll() {
+        if (this._app && this._app.gameState) {
+            this.update(this._app.gameState);
+        }
+    },
+
     /** 设置状态文本 */
     setStatus(text) {
         document.getElementById('action-status').textContent = text;

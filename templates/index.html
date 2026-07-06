@@ -125,27 +125,14 @@
                 <div id="history-list"></div>
                 <!-- 回放控件（回放模式时显示） -->
                 <div id="replay-controls" class="replay-controls">
-                    <div class="replay-controls-header">
-                        <span id="replay-step-counter">0 / 0</span>
-                        <select id="replay-speed">
-                            <option value="1600">0.25x</option>
-                            <option value="800">0.5x</option>
-                            <option value="400" selected>1x</option>
-                            <option value="200">2x</option>
-                        </select>
-                    </div>
-                    <div id="replay-progress-container">
-                        <div id="replay-progress-bar">
-                            <div id="replay-progress-fill"></div>
-                        </div>
-                    </div>
                     <div id="replay-action-info"></div>
                     <div class="replay-buttons">
-                        <button id="btn-replay-prev" class="btn btn-sm">◀</button>
-                        <button id="btn-replay-play" class="btn btn-primary btn-sm">▶ 播放</button>
-                        <button id="btn-replay-next" class="btn btn-sm">▶</button>
-                        <button id="btn-replay-reset" class="btn btn-sm">↺</button>
+                        <button id="btn-replay-prev" class="btn btn-sm">◀ 上一步</button>
                         <button id="btn-replay-exit" class="btn btn-sm btn-danger">退出回放</button>
+                        <button id="btn-replay-next" class="btn btn-sm">下一步 ▶</button>
+                    </div>
+                    <div class="replay-step-indicator">
+                        <span id="replay-step-counter">0 / 0</span>
                     </div>
                 </div>
             </div>

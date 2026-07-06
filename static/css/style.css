@@ -943,39 +943,6 @@ body {
 .replay-controls.active {
     display: block;
 }
-.replay-controls-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 6px;
-}
-.replay-controls-header #replay-step-counter {
-    font-family: monospace;
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-/* 回放进度条 */
-#replay-progress-container {
-    width: 100%;
-    margin: 4px 0;
-    cursor: pointer;
-}
-#replay-progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #333;
-    border-radius: 3px;
-    overflow: hidden;
-}
-#replay-progress-fill {
-    width: 0%;
-    height: 100%;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light));
-    border-radius: 3px;
-    transition: width 0.2s ease;
-}
 
 /* 回放动作信息栏 */
 #replay-action-info {
@@ -991,23 +958,19 @@ body {
     display: flex;
     gap: 6px;
     justify-content: center;
+    align-items: center;
 }
 
-#btn-replay-exit {
-    margin-left: 12px;
+/* 回放步数指示器 */
+.replay-step-indicator {
+    text-align: center;
+    margin-top: 6px;
 }
-
-/* 回放速度选择器 */
-#replay-speed {
-    padding: 2px 4px;
-    background: #222;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    color: var(--text-primary);
-    font-size: 10px;
-    cursor: pointer;
+.replay-step-indicator #replay-step-counter {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--gold);
 }
-#replay-speed:hover { border-color: var(--gold); }
 
 /* 当前回放的历史条目高亮 */
 .history-item.history-item-active {
