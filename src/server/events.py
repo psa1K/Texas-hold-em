@@ -405,6 +405,11 @@ class GameManager:
                     best_five = [c.short_str for c in result.best_five]
                     hand_description = result.description
                     sort_key = result.score  # 元组可比，越小牌力越强
+                else:
+                    # 不足 5 张牌（翻牌前/翻牌圈结束），直接展示已有底牌
+                    best_five = [c.short_str for c in p.hole_cards]
+                    hand_description = "未摊牌"
+                    sort_key = None
             player_dict = {
                 "name": p.name,
                 "is_folded": is_folded,
@@ -412,6 +417,7 @@ class GameManager:
                 "net_profit": winners.get(p.name, 0) - p.total_bet,
                 "best_five": best_five,
                 "hand_description": hand_description,
+                "hole_cards": [c.short_str for c in p.hole_cards] if p.hole_cards else [],
             }
             entries.append((player_dict, sort_key))
 

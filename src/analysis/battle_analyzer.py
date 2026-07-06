@@ -173,30 +173,9 @@ class BattleAnalyzer:
         for r in range(1, max_rank + 1):
             count = rank_counts.get(r, 0)
             prob = round(count / num_sims * 100, 1)
-            rank_label = f"第{r}名" if count > 0 else f"第{r}名"
             ranking_distribution.append({
                 "rank": r,
-                "desc": rank_label,
-                "prob": prob,
-            })
-
-        # 汇总并列情况：P(rank=1)=胜率, 其余为排名后位
-        # 重新计算以展示格式
-        ranking_distribution = []
-        for r in range(1, max_rank + 1):
-            count = rank_counts.get(r, 0)
-            prob = round(count / num_sims * 100, 1)
-            if r == 1:
-                desc = f"第1名 (胜)"
-            elif r == 2:
-                desc = f"第2名"
-            elif r == max_rank:
-                desc = f"第{r}名 (最差)"
-            else:
-                desc = f"第{r}名"
-            ranking_distribution.append({
-                "rank": r,
-                "desc": desc,
+                "desc": f"第{r}名",
                 "prob": prob,
             })
 
@@ -225,7 +204,7 @@ class BattleAnalyzer:
                 hole_cards, community_cards, active_opponent_count, self.postflop_sims
             )
         else:
-            ranking_dist = [{"rank": 1, "desc": "第1名 (胜)", "prob": 100.0}]
+            ranking_dist = [{"rank": 1, "desc": "第1名", "prob": 100.0}]
 
         odds_ev = self._calc_odds_ev(game, player, active_opponent_count, ranking_dist)
         pot_financials = self._calc_pot_financials(game, player)
